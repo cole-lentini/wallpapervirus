@@ -27,7 +27,7 @@ Repeatedly changes the victim's wallpaper for seconds at a time. Do not change t
 ### [Settings.json](../main/Settings.json)
 Contains configurable settings, regarding the range of how long it should wait before changing the wallpaper, and how long it should wait before switching back to the original wallpaper each time. Do not change the variable names; only change the number values.
 
-### [ShortcutIcon.ico](../main/ShortcutIcon.ico)
+### ShortcutIcon.ico
 Fake Windows Defender icon for the shortcut in the startup folder. Do not change the name of this file.
 
 ### [Wallpapers Folder](../main/Wallpapers)
