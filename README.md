@@ -4,12 +4,12 @@ _**Note: this only works on Windows operating systems.**_
 
 ## ⚠️IMPORTANT⚠️
 To ensure the program works properly, do not modify any files, with two exceptions: 
-1. You may rename, delete, replace, or add image files to the ["**Wallpapers**" folder](#wallpapers-folder).
+1. You may rename, delete, replace, or add image files to the [**"Wallpapers" folder**](#wallpapers-folder).
 2. You may change the number values inside [**Settings.json**](#settingsjson).
 
 ## Instructions:
 1. Download this repository as a zip file, and unzip it to a folder.
-2. Replace the images in the ["**Wallpapers**" subfolder](#wallpapers-folder) with the wallpapers you would like the program to randomly choose from.
+2. Replace the images in the [**"Wallpapers" subfolder**](#wallpapers-folder) with the wallpapers you would like the program to randomly choose from.
 3. If you want to change the timing of the program, open the [**Settings.json**](#settingsjson) file (you can use notepad) and edit the values as you wish.
 4. Move the unzipped folder onto your USB drive. Your USB drive is now set up properly.
 
@@ -21,6 +21,7 @@ Keep in mind, **once set up, the USB drive is infinitely useable** for spreading
 8. Wait 5-10 seconds, then remove the USB drive.
 
 Your victim's computer is now infected with the USB Wallpaper Virus.
+If you ever wish to change/add more wallpapers for the program to choose from, or change the timing settings, after already having installed the virus to the victim's computer, simply make the desired changes on the USB drive (by changing/adding more wallpapers to the [**"Wallpapers" folder**](#wallpapers-folder) and/or editing [**Settings.json**](#settingsjson)), and then repeat steps 5-8 above. Every time you run [**Setup.exe**](#setupexe), it will update the settings of the existing virus files on the victim's computer.
 
 ## Files
 ### [Setup.exe](../main/Setup.exe)
