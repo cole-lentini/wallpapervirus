@@ -1,6 +1,6 @@
 # USB Wallpaper Virus
 This package consists of two scripts that work together to continuously change the victim's desktop wallpaper every 1-5 minutes for 5 seconds at a time. 
-Note: this only works on Windows operating systems.
+__Note: this only works on Windows operating systems.__
 
 ## Instructions:
 1. Download this repository as a zip file, and unzip it to a folder.
