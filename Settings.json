@@ -1,5 +1,5 @@
 {
-    "min_wait_time": 1,
-    "max_wait_time": 1,
-    "wallpaper_duration": 1
+    "min_wait_time": 60,
+    "max_wait_time": 300,
+    "wallpaper_duration": 5
 }
