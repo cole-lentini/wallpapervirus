@@ -3,7 +3,7 @@ This package consists of two scripts that work together to continuously change t
 Note: this only works on Windows operating systems.
 
 ## Instructions:
-Download this repository as a zip file. Unzip it to a folder. Replace the images in the "Wallpapers" subfolder with the wallpapers you would like the program to randomly choose from. If you want to change the timing of the program, open the **settings.json** file (you can use notepad) and edit the values as you wish. Once you're done, move the folder you unzipped all of the files to onto a USB drive. Your USB drive is now ready. When you're ready, plug the USB drive into the victim's computer, and run **Setup.exe**. 
+Download this repository as a zip file. Unzip it to a folder. Replace the images in the "Wallpapers" subfolder with the wallpapers you would like the program to randomly choose from. If you want to change the timing of the program, open the **settings.json** file (you can use notepad) and edit the values as you wish. Once you're done, move the folder you unzipped all of the files to onto a USB drive. Your USB drive is now set up properly. When you're ready, plug the USB drive into the victim's computer, open the USB drive in file explorer, then right click and run **Setup.exe** as administrator. That's it! You're done. 
 
 ### Setup.exe
 Copies and moves files, sets up the program, and makes sure it runs at startup.
