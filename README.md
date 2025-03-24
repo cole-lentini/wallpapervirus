@@ -17,6 +17,7 @@ Note: this only works on Windows operating systems.
 
 Your victim's computer is now infected with the USB Wallpaper Virus.
 
+## Files
 ### Setup.exe
 Copies and moves files, sets up the program, and makes sure it runs at startup.
 
