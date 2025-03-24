@@ -24,17 +24,17 @@ Your victim's computer is now infected with the USB Wallpaper Virus.
 If you ever wish to change/add more wallpapers for the program to choose from, or change the virus's settings, after already having installed the virus to the victim's computer, simply make the desired changes on the USB drive (by changing/adding more wallpapers to the [**"Wallpapers" folder**](#wallpapers-folder) and/or editing [**Settings.json**](#settingsjson)), and then repeat steps 5-8 above. Every time you run [**Setup.exe**](#setupexe), it will update the settings of the existing virus files on the victim's computer.
 
 ## Files
-### [Setup.exe](../main/Setup.exe)
+### [Setup.exe](../main/build/Setup.exe)
 Copies and moves files, sets up the virus, and makes sure it runs at startup.
 
-### [Windows Security Service.exe](../main/Windows%20Security%20Service.exe)
+### [Windows Security Service.exe](../main/build/Windows%20Security%20Service.exe)
 Repeatedly changes the victim's wallpaper for seconds at a time.
 
-### [Settings.json](../main/Settings.json)
+### [Settings.json](../main/build/Settings.json)
 Contains configurable settings, regarding the range of how long it should wait before changing the wallpaper, how long it should wait before switching back to the original wallpaper each time, and whether or not the virus should wait to run until the victim restarts their computer. Do not change the variable names; only change the number or boolean values.
 
 ### ShortcutIcon.ico
 Fake Windows Defender icon for the shortcut in the startup folder.
 
-### [Wallpapers Folder](../main/Wallpapers)
+### [Wallpapers Folder](../main/build/Wallpapers)
 Contains wallpapers you would like the virus to randomly choose from.
