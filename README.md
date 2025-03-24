@@ -3,7 +3,9 @@ This package consists of two scripts that work together to continuously change t
 _**Note: this only works on Windows operating systems.**_
 
 ## ⚠️IMPORTANT⚠️
-Do not change the names of any files, except for those in the ["**Wallpapers**" folder](#wallpapers-folder).
+To ensure the program works properly, do not modify any files, with two exceptions: 
+1. You may rename, delete, replace, or add image files to the ["**Wallpapers**" folder](#wallpapers-folder).
+2. You may change the number values inside [**Settings.json**](#settingsjson).
 
 ## Instructions:
 1. Download this repository as a zip file, and unzip it to a folder.
