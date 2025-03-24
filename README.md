@@ -2,6 +2,9 @@
 This package consists of two scripts that work together to continuously change the victim's desktop wallpaper every 1-5 minutes for 5 seconds at a time. 
 _**Note: this only works on Windows operating systems.**_
 
+## ⚠️IMPORTANT⚠️
+Do not change the names of any files, except for those in the ["**Wallpapers**" folder](#wallpapers-folder).
+
 ## Instructions:
 1. Download this repository as a zip file, and unzip it to a folder.
 2. Replace the images in the ["**Wallpapers**" subfolder](#wallpapers-folder) with the wallpapers you would like the program to randomly choose from.
