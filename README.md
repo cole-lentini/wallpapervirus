@@ -23,8 +23,8 @@ Keep in mind, **once set up, the USB drive is infinitely useable** for spreading
 Your victim's computer is now infected with the USB Wallpaper Virus.
 If you ever wish to change/add more wallpapers for the program to choose from, or change the virus's settings, after already having installed the virus to the victim's computer, simply make the desired changes on the USB drive (by changing/adding more wallpapers to the [**"Wallpapers" folder**](#wallpapers-folder) and/or editing [**Settings.json**](#settingsjson)), and then repeat steps 5-8 above. Every time you run [**Setup.exe**](#setupexe), it will update the settings of the existing virus files on the victim's computer.
 
-## Files
-### build folder
+## build folder
+Contains the following project files:
 ### [Setup.exe](../main/build/Setup.exe)
 Copies and moves files, sets up the virus, and makes sure it runs at startup.
 
