@@ -7,7 +7,9 @@ Note: this only works on Windows operating systems.
 2. Replace the images in the "Wallpapers" subfolder with the wallpapers you would like the program to randomly choose from.
 3. If you want to change the timing of the program, open the **settings.json** file (you can use notepad) and edit the values as you wish.
 4. Move the unzipped folder onto a USB drive. Your USB drive is now set up properly.
+
    Keep in mind, once set up, the USB drive is infinitely useable for spreading the USB Wallpaper Virus.
+   
 5. Plug the USB drive into the victim's computer.
 6. Open the USB drive in file explorer.
 7. Right click and run **Setup.exe** as administrator.
