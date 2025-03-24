@@ -14,7 +14,8 @@ Note: this only works on Windows operating systems.
 6. Open the USB drive in file explorer.
 7. Right click and run **Setup.exe** as administrator.
 8. Wait 5-10 seconds, then remove the USB drive.
-   Your victim's computer is now infected with the USB Wallpaper Virus.
+
+Your victim's computer is now infected with the USB Wallpaper Virus.
 
 ### Setup.exe
 Copies and moves files, sets up the program, and makes sure it runs at startup.
