@@ -30,7 +30,7 @@ Copies and moves files, sets up the program, and makes sure it runs at startup.
 Repeatedly changes the victim's wallpaper for seconds at a time.
 
 ### [Settings.json](../main/Settings.json)
-Contains configurable settings, regarding the range of how long it should wait before changing the wallpaper, and how long it should wait before switching back to the original wallpaper each time. Do not change the variable names; only change the number values.
+Contains configurable settings, regarding the range of how long it should wait before changing the wallpaper, how long it should wait before switching back to the original wallpaper each time, and whether or not the virus should wait to run until the victim restarts their computer. Do not change the variable names; only change the number or boolean values.
 
 ### ShortcutIcon.ico
 Fake Windows Defender icon for the shortcut in the startup folder.
