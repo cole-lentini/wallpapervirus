@@ -36,3 +36,10 @@ Contains configurable settings, regarding the range of how long it should wait b
 
 ### [Wallpapers Folder](../main/build/Wallpapers)
 Contains wallpapers you would like the virus to randomly choose from.
+
+## source folder
+Contains the following source files:
+### [Setup.py](../main/source/Setup.py)
+Used to create [**Setup.exe**](#setupexe)
+### [TimeManager.py](../main/source/TimeManager.py)
+Used to create [**TimeManager.exe**](#timemanagerexe)
