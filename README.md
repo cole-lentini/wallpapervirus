@@ -13,7 +13,7 @@ To ensure the program works properly, do not modify any files, with two exceptio
 3. If you want to change the program settings, open the [**Settings.json**](#settingsjson) file (you can use notepad) and edit the values as you wish.
 4. Move the unzipped folder onto your USB drive. Your USB drive is now set up properly.
 
-Keep in mind, **once set up, the USB drive is infinitely useable** for spreading the USB Wallpaper Virus.
+Keep in mind, **once set up, the USB drive is infinitely reuseable** for spreading the USB Wallpaper Virus.
 
 5. Plug the USB drive into the victim's computer.
 6. Open the USB drive in file explorer.
