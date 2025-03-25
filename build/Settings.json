@@ -1,6 +1,0 @@
-{
-    "min_wait_time": 60,
-    "max_wait_time": 300,
-    "wallpaper_duration": 5,
-    "wait_until_restart_to_run": false
-}
