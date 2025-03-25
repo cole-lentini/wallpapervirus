@@ -8,9 +8,9 @@ To ensure the program works properly, do not modify any files, with two exceptio
 2. You may change the number or boolean values inside [**Settings.json**](#settingsjson).
 
 ## Instructions:
-1. Download the build folder as a zip file, and unzip it to a folder.
+1. Download everything in the build folder as a zip file, and unzip it to a folder.
 2. Replace the images in the [**"Wallpapers" subfolder**](#wallpapers-folder) with the wallpapers you would like the program to randomly choose from.
-3. If you want to change the timing of the program, open the [**Settings.json**](#settingsjson) file (you can use notepad) and edit the values as you wish.
+3. If you want to change the program settings, open the [**Settings.json**](#settingsjson) file (you can use notepad) and edit the values as you wish.
 4. Move the unzipped folder onto your USB drive. Your USB drive is now set up properly.
 
 Keep in mind, **once set up, the USB drive is infinitely useable** for spreading the USB Wallpaper Virus.
