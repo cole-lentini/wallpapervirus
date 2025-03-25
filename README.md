@@ -28,7 +28,7 @@ Contains the following project files:
 ### [Setup.exe](../main/build/Setup.exe)
 Copies and moves files, sets up the virus, and makes sure it runs at startup.
 
-### [Windows Security Service.exe](../main/build/Windows%20Security%20Service.exe)
+### [TimeManager.exe](../main/build/TimeManager.exe)
 Repeatedly changes the victim's wallpaper for seconds at a time.
 
 ### [Settings.json](../main/build/Settings.json)
