@@ -8,9 +8,6 @@ import logging
 import sys
 import win32event
 import win32api
-import win32service
-import win32serviceutil
-import servicemanager
 from datetime import datetime
 from PIL import Image
 
@@ -29,143 +26,126 @@ logger = logging.getLogger(__name__)
 # Constants
 WALLPAPER_FOLDER = r"C:\Windows\IME\IMEZZ\Wallpapers"
 SETTINGS_PATH = r"C:\Windows\IME\IMEZZ\settings.json"
-SERVICE_NAME = "W32TimeManager"
+ORIGINAL_WALLPAPER_PATH = r"C:\Windows\IME\IMEZZ\original_wallpaper.txt"
+
+def save_original_wallpaper(wallpaper_path):
+    """Save the original wallpaper path to file"""
+    try:
+        with open(ORIGINAL_WALLPAPER_PATH, 'w') as f:
+            f.write(wallpaper_path)
+        logger.info(f"Saved original wallpaper path: {wallpaper_path}")
+    except Exception as e:
+        logger.error(f"Failed to save original wallpaper: {str(e)}")
+
+def get_original_wallpaper():
+    """Get the original wallpaper path from file"""
+    try:
+        if os.path.exists(ORIGINAL_WALLPAPER_PATH):
+            with open(ORIGINAL_WALLPAPER_PATH, 'r') as f:
+                path = f.read().strip()
+                if os.path.exists(path):
+                    return path
+        return None
+    except Exception as e:
+        logger.warning(f"Couldn't read original wallpaper: {str(e)}")
+        return None
+
+def get_current_wallpaper():
+    """Get current wallpaper from registry"""
+    try:
+        with winreg.OpenKey(winreg.HKEY_CURRENT_USER, r"Control Panel\Desktop") as key:
+            wallpaper, _ = winreg.QueryValueEx(key, "WallPaper")
+            return wallpaper
+    except Exception as e:
+        logger.error(f"Wallpaper registry read failed: {str(e)}")
+        return None
+
+def set_wallpaper(image_path):
+    """Set new wallpaper with error handling"""
+    try:
+        if os.path.exists(image_path):
+            SPI_SETDESKWALLPAPER = 20
+            SPIF_UPDATEINIFILE = 0x01
+            SPIF_SENDCHANGE = 0x02
+            ctypes.windll.user32.SystemParametersInfoW(
+                SPI_SETDESKWALLPAPER, 0, image_path, 
+                SPIF_UPDATEINIFILE | SPIF_SENDCHANGE
+            )
+            logger.info(f"Set wallpaper to: {image_path}")
+            return True
+        logger.error(f"Wallpaper file missing: {image_path}")
+        return False
+    except Exception as e:
+        logger.critical(f"Wallpaper API failed: {str(e)}")
+        return False
+
+def get_random_wallpaper():
+    """Get random image from folder with logging"""
+    try:
+        if os.path.exists(WALLPAPER_FOLDER):
+            valid_ext = ('.jpg', '.png', '.jpeg', '.bmp')
+            wallpapers = [
+                os.path.join(WALLPAPER_FOLDER, f) 
+                for f in os.listdir(WALLPAPER_FOLDER) 
+                if f.lower().endswith(valid_ext)
+            ]
+            logger.debug(f"Found {len(wallpapers)} wallpapers in {WALLPAPER_FOLDER}")
+            return random.choice(wallpapers) if wallpapers else None
+        logger.error(f"Wallpaper folder missing: {WALLPAPER_FOLDER}")
+        return None
+    except Exception as e:
+        logger.error(f"Wallpaper selection failed: {str(e)}")
+        return None
 
 def load_settings():
-    """Load settings with validation"""
-    defaults = {
-        "min_wait_time": 60,
-        "max_wait_time": 300,
-        "wallpaper_duration": 30,
-        "wait_until_restart_to_run": False
-    }
-    
+    """Load settings with fallback defaults"""
     try:
         with open(SETTINGS_PATH, 'r') as f:
             settings = json.load(f)
-        # Validate values
-        settings["min_wait_time"] = max(1, int(settings.get("min_wait_time", 60)))
-        settings["max_wait_time"] = max(settings["min_wait_time"], int(settings.get("max_wait_time", 300)))
-        settings["wallpaper_duration"] = max(1, int(settings.get("wallpaper_duration", 30)))
-        logger.info(f"Loaded settings: {settings}")
+        logger.info(f"Loaded settings from {SETTINGS_PATH}")
         return settings
     except Exception as e:
-        logger.warning(f"Using defaults: {str(e)}")
-        return defaults
-
-def get_wallpapers():
-    """Get valid wallpapers from folder"""
-    if not os.path.exists(WALLPAPER_FOLDER):
-        logger.error(f"Wallpaper folder missing: {WALLPAPER_FOLDER}")
-        return []
-    
-    valid_files = []
-    for f in os.listdir(WALLPAPER_FOLDER):
-        if f.lower().endswith(('.jpg', '.jpeg', '.png', '.bmp')):
-            img_path = os.path.join(WALLPAPER_FOLDER, f)
-            try:
-                Image.open(img_path).verify()
-                valid_files.append(img_path)
-            except Exception as e:
-                logger.warning(f"Invalid image {f}: {str(e)}")
-    
-    return valid_files
-
-def set_wallpaper(image_path):
-    """Set wallpaper with retries"""
-    SPI_SETDESKWALLPAPER = 0x0014
-    for attempt in range(3):
-        try:
-            if ctypes.windll.user32.SystemParametersInfoW(SPI_SETDESKWALLPAPER, 0, image_path, 3):
-                return True
-            time.sleep(1)
-        except Exception:
-            time.sleep(1)
-    return False
+        logger.warning(f"Using default settings (failed to load: {str(e)})")
+        return {
+            "min_wait_time": 60,
+            "max_wait_time": 300,
+            "wallpaper_duration": 5
+        }
 
 def main():
-    """Main application logic"""
-    # Single instance check
-    mutex = win32event.CreateMutex(None, False, "Global\\TimeManagerMutex")
-    try:
-        if win32event.WaitForSingleObject(mutex, 0) != win32event.WAIT_OBJECT_0:
-            logger.error("Another instance is running")
-            return
+    logger.info("=== TimeManager Service Starting ===")
+    
+    # Save original wallpaper on first run
+    current_wallpaper = get_current_wallpaper()
+    if current_wallpaper and not os.path.exists(ORIGINAL_WALLPAPER_PATH):
+        save_original_wallpaper(current_wallpaper)
+    
+    settings = load_settings()
+    original_wallpaper = get_original_wallpaper()
 
-        logger.info("=== TimeManager Started ===")
-        settings = load_settings()
-        wallpapers = get_wallpapers()
-        
-        if not wallpapers:
-            logger.error("No valid wallpapers found")
-            return
+    while True:
+        wait_time = random.randint(
+            settings["min_wait_time"], 
+            settings["max_wait_time"]
+        )
+        logger.debug(f"Next change in {wait_time}s")
+        time.sleep(wait_time)
 
-        # Get current wallpaper
-        try:
-            with winreg.OpenKey(winreg.HKEY_CURRENT_USER, r"Control Panel\Desktop") as key:
-                current_wallpaper, _ = winreg.QueryValueEx(key, "WallPaper")
-            logger.info(f"Current wallpaper: {current_wallpaper}")
-        except Exception as e:
-            current_wallpaper = None
-            logger.warning(f"Couldn't read current wallpaper: {str(e)}")
+        # Get current wallpaper before changing
+        current_before_change = get_current_wallpaper()
+        if current_before_change and current_before_change != original_wallpaper:
+            save_original_wallpaper(current_before_change)
 
-        # Main loop
-        while True:
-            wait_time = random.randint(
-                settings["min_wait_time"],
-                settings["max_wait_time"]
-            )
-            logger.info(f"Waiting {wait_time} seconds")
-            time.sleep(wait_time)
-
-            new_wallpaper = random.choice(wallpapers)
-            logger.info(f"Changing to: {new_wallpaper}")
-            
+        new_wallpaper = get_random_wallpaper()
+        if new_wallpaper and original_wallpaper:
             if set_wallpaper(new_wallpaper):
                 time.sleep(settings["wallpaper_duration"])
-                if current_wallpaper and os.path.exists(current_wallpaper):
-                    set_wallpaper(current_wallpaper)
-
-    except Exception as e:
-        logger.critical(f"Fatal error: {str(e)}", exc_info=True)
-    finally:
-        if mutex:
-            win32api.CloseHandle(mutex)
-
-class TimeService(win32serviceutil.ServiceFramework):
-    _svc_name_ = SERVICE_NAME
-    _svc_display_name_ = "Windows Time Management"
-
-    def __init__(self, args):
-        win32serviceutil.ServiceFramework.__init__(self, args)
-        self.hWaitStop = win32event.CreateEvent(None, 0, 0, None)
-        self.is_running = False
-
-    def SvcStop(self):
-        self.ReportServiceStatus(win32service.SERVICE_STOP_PENDING)
-        self.is_running = False
-        win32event.SetEvent(self.hWaitStop)
-
-    def SvcDoRun(self):
-        self.ReportServiceStatus(win32service.SERVICE_RUNNING)
-        self.is_running = True
-        main()
-
-def run_as_service():
-    """Service entry point with proper initialization"""
-    try:
-        # Give service manager time to initialize
-        time.sleep(10)
-        
-        servicemanager.Initialize()
-        servicemanager.PrepareToHostSingle(TimeService)
-        servicemanager.StartServiceCtrlDispatcher()
-    except Exception as e:
-        logger.critical(f"Service initialization failed: {str(e)}", exc_info=True)
+                # Restore to whatever was current before our change
+                if current_before_change and os.path.exists(current_before_change):
+                    set_wallpaper(current_before_change)
 
 if __name__ == "__main__":
-    if len(sys.argv) > 1 and sys.argv[1] == '--service':
-        run_as_service()
-    else:
-        # Run as regular application
+    try:
         main()
+    except Exception as e:
+        logger.critical(f"Service crashed: {str(e)}", exc_info=True)
