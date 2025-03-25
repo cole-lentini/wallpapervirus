@@ -1,11 +1,11 @@
 # USB Wallpaper Virus
-This package consists of two scripts that work together to continuously change the victim's desktop wallpaper every 1-5 minutes for 5 seconds at a time. 
+This package consists of scripts that work together to continuously change the victim's desktop wallpaper every 1-5 minutes for 5 seconds at a time. 
 _**Note: this only works on Windows operating systems.**_
 
 ## ⚠️IMPORTANT⚠️
 To ensure the program works properly, do not modify any files, with two exceptions: 
 1. You may rename, delete, replace, or add image files to the [**"Wallpapers" folder**](#wallpapers-folder).
-2. You may change the number values inside [**Settings.json**](#settingsjson).
+2. You may change the number or boolean values inside [**Settings.json**](#settingsjson).
 
 ## Instructions:
 1. Download the build folder as a zip file, and unzip it to a folder.
@@ -32,10 +32,7 @@ Copies and moves files, sets up the virus, and makes sure it runs at startup.
 Repeatedly changes the victim's wallpaper for seconds at a time.
 
 ### [Settings.json](../main/build/Settings.json)
-Contains configurable settings, regarding the range of how long it should wait before changing the wallpaper, how long it should wait before switching back to the original wallpaper each time, and whether or not the virus should wait to run until the victim restarts their computer. Do not change the variable names; only change the number or boolean values.
-
-### ShortcutIcon.ico
-Fake Windows Defender icon for the shortcut in the startup folder.
+Contains configurable settings, regarding the range of how long it should wait before changing the wallpaper, how long it should wait before switching back to the original wallpaper each time, and whether or not the virus should wait to run until the victim restarts their computer. 
 
 ### [Wallpapers Folder](../main/build/Wallpapers)
 Contains wallpapers you would like the virus to randomly choose from.
