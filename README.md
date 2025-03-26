@@ -18,10 +18,11 @@ Keep in mind, **once set up, the USB drive is infinitely reuseable** for spreadi
 5. Plug the USB drive into the victim's computer.
 6. Open the USB drive in file explorer.
 7. Right click and run [**Setup.exe**](#setupexe) as administrator.
-8. Wait 5-10 seconds, then remove the USB drive.
+8. Wait for 5-10 seconds, until a popup box appears, which should say that the installation was a success.
+9. Remove the USB drive. 
 
 Your victim's computer is now infected with the USB Wallpaper Virus.
-If you ever wish to change/add more wallpapers for the program to choose from, or change the virus's settings, after already having installed the virus to the victim's computer, simply make the desired changes on the USB drive (by changing/adding more wallpapers to the [**"Wallpapers" folder**](#wallpapers-folder) and/or editing [**Settings.json**](#settingsjson)), and then repeat steps 5-8 above. Every time you run [**Setup.exe**](#setupexe), it will update the settings of the existing virus files on the victim's computer.
+If you ever wish to change/add more wallpapers for the program to choose from, or change the virus's settings, after already having installed the virus to the victim's computer, simply make the desired changes on the USB drive (by changing/adding more wallpapers to the [**"Wallpapers" folder**](#wallpapers-folder) and/or editing [**Settings.json**](#settingsjson)), and then repeat steps 5-9 above. Every time you run [**Setup.exe**](#setupexe), it will update the settings of the existing virus files on the victim's computer.
 
 ## build folder
 Contains the following project files:
